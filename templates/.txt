@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script> <!-- TensorFlow.js library -->
+    <style>
+        /* Popup Modal Styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto; /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; /* Could be more or less, depending on screen size */
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .upload-button, .analyze-button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .analyze-button {
+            background-color:#4CAF50; /* Different color for Analyze button */
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <!-- == Header Section == -->
+    <header>
+        <nav>
+            <div class="logo">
+                CROPDOC
+            </div>
+        </nav>
+
+        <section class="h-text">
+            <span>Welcome To</span>
+            <h1>CROPDOC</h1>
+            <br>
+            <!-- Button to upload image of crop -->
+            <input type="file" id="upload" accept="image/*" style="display:none;" />
+            <label for="upload" class="upload-button">UPLOAD IMAGE OF CROP</label>
+            <button class="analyze-button" id="analyzeButton">ANALYZE</button>
+            <p id="result"></p> <!-- Display prediction result -->
+        </section>
+    </header>
+
+    <!-- == Feature Section == -->
+    <section class="features">
+        <h2><u>Our Features</u></h2>
+        <div class="feature-card">
+            <div class="feature">
+                <img src="detect plant.jpg" alt="" width="215" height="234">
+                <h3>Detects Disease in the Plant</h3>
+            </div>
+            <div class="feature">
+                <img src="suggestion.png" alt="" width="215" height="234">
+                <h3>Provides Suggestions for Better Result</h3>
+            </div>
+        </div>
+    </section>
+
+    <!-- -- Table Section -- -->
+    <section class="table">
+        <h2></h2>
+        <table>
+            <tr>
+                <td><b>CROP</b></td>
+                <td><b>DISEASES</b></td>
+            </tr>
+            <tr>
+                <td>Paddy</td>
+                <td>'Blast Disease', 'Brown Spot', 'Bacterial Leaf Blight', 'Sheath Blight'</td>
+            </tr>
+            <tr>
+                <td>Wheat</td>
+                <td>'Rust', 'Powdery Mildew', 'Common Root Rot', 'Septoria'</td>
+            </tr>
+            <tr>
+                <td>Cotton</td>
+                <td>'Bacterial Blight', 'Cotton Rust', 'Charcoal Rot', 'Boll Rot'</td>
+            </tr>
+            <tr>
+                <td>Sugarcane</td>
+                <td>'Yellow Leaf Disease', 'Eyespot Disease', 'Mosaic', 'Wilt', 'Brown Rust'</td>
+            </tr>
+            <tr>
+                <td>Potato</td>
+                <td>'Bacterial Wilt', 'Late Blight', 'Early Blight', 'Common Scab'</td>
+            </tr>
+            <tr>
+                <td>Jute</td>
+                <td>'Stem Rot', 'Anthracnose', 'Black Band', 'Jute Mosaic'</td>
+            </tr>
+        </table>
+    </section>
+
+    <!-- Modal for Results -->
+    <div id="resultModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Analysis Result</h2>
+            <p id="modalResult"></p>
+        </div>
+    </div>
+
+    <script>
+        // Load the TensorFlow.js model
+        let model;
+        async function loadModel() {
+            model = await tf.loadGraphModel('C:\Users\Prince\Desktop\WEB\template\output.json'); // Replace with your model URL
+            console.log("Model loaded successfully.");
+        }
+
+        // Call loadModel when the page loads
+        window.onload = loadModel;
+
+        // Event listener for image upload
+        document.getElementById('upload').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imgElement = new Image();
+                    imgElement.src = e.target.result;
+                    imgElement.onload = function() {
+                        // Store the image element for processing later
+                        window.storedImage = imgElement;
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Function to process the image and make predictions
+        async function processImage(imgElement) {
+            const tensor = tf.browser.fromPixels(imgElement)
+                .resizeNearestNeighbor([224, 224]) // Adjust the size to the model's input
+                .toFloat()
+                .expandDims(); // Add a batch dimension
+
+            const predictions = await model.predict(tensor).data();
+            const maxPrediction = predictions.indexOf(Math.max(...predictions));
+            return `Predicted Class: ${maxPrediction}`;
+        }
+
+        // Event listener for analyze button
+        document.getElementById('analyzeButton').addEventListener('click', async function() {
+            if (window.storedImage) {
+                const result = await processImage(window.storedImage);
+                document.getElementById('modalResult').innerText = result;
+                document.getElementById('resultModal').style.display = "block";
+            } else {
+                alert("Please upload an image first.");
+            }
+        });
+
+        // Modal close functionality
+        const modal = document.getElementById('resultModal');
+        const span = document.getElementsByClassName('close')[0];
+
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>

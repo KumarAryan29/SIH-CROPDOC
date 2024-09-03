@@ -1,0 +1,318 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+/* -- Header section -- */
+header{
+    width: 100%;
+    height: 100vh;
+    background: linear-gradient(rgba(0,0,0,0.9), rgba(0, 0, 0, 0.02)), url("bg.jpg");
+    background-size: cover;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+nav{
+    width: 100%;
+    height: 100px;
+    color: black;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 28px 53px;
+}
+
+.logo{
+    font-size: 2em;
+    letter-spacing: 2px;
+    color: white;
+}
+
+.menu a{
+    text-decoration: none;
+    color: white;
+    padding: 10px 20px;
+    font-size: 20px;
+    position: relative;
+}
+
+.register a{
+    text-decoration: none;
+    color: white;
+    padding: 10px 20px;
+    font-size: 20px;
+    background: rgba(60, 60, 255);
+    border-radius: 8px;
+}
+
+.h-text{
+    max-width: 650px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+}
+
+.h-text span{
+    letter-spacing: 5px;
+}
+
+.h-text h1{
+    font-size: 3.5em;
+}
+
+.h-text a{
+    text-decoration: none;
+    background: rgba(60, 60, 255);
+    color: white;
+    padding: 10px 20px;
+    letter-spacing: 5px;
+    transition: 0.4s;
+}
+
+/* -- Hover Effect -- */
+.menu a::before{
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 100%;
+    border-bottom: 2px solid indianred;
+    transition: 0.4s linear;
+}
+.menu a:hover::before{
+    width: 90%;
+}
+
+.register a:hover{
+    background: transparent;
+    border: 1px solid indianred;
+}
+.h-text a:hover{
+    background: transparent;
+    border: 1px solid indianred;
+}
+
+/* -- feature section -- */
+.features{
+    text-align: center;
+    padding: 50px 0;
+}
+
+.features h2{
+    font-size: 28px;
+    margin-bottom: 20px;
+}
+
+.feature-card{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.feature{
+    width: calc(33.3% - 20px);
+    margin: 0 10px;
+    background-color: #ffffff;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.1s ease;
+    margin-bottom: 0px;
+    margin-top: 50px;
+    position: relative;
+    overflow: visible;
+    min-height: 500px; /* Use min-height to ensure content visibility */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+
+    /* height: 500px; */
+}
+
+
+/* 
+.hidden-content {
+    width: 100%;
+    height: 0;
+    max-height: 300px; 
+    background: linear-gradient(rgba(0,0,0,0.6), #7bf4a5);
+    border-radius: 10px;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    overflow-y: auto;
+    overflow-x: hidden; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 30px; 
+    text-align: center;
+    font-size: 18px; 
+    transition: height 0.5s;
+} */
+
+.hidden-content {
+    width: 100%;
+    height: 0; /* Start with a height of 0 for animation purposes */
+    max-height: 500px; /* Maximum height before scrolling is needed */
+    background: linear-gradient(rgba(0,0,0,0.6), #7bf4a5);
+    border-radius: 10px;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    /* top:/0; */
+    overflow-y: auto; /* Enable vertical scrolling */
+    overflow-x: hidden; /* Hide horizontal overflow */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 30px; /* Adjust padding as needed */
+    padding-top: 475px;
+    text-align: left;
+    font-size: 18px; /* Increase font size */
+    transition: height 0.1s;
+    box-sizing: border-box; /* Ensure padding and border are included in total width and height */
+}
+
+
+.feature img{
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+}
+
+.feature h3{
+    font-size: 20px;
+    margin-top: 10px;
+}
+
+/* -- Hover effect -- */
+.feature:hover{
+    transform: scale(00.5s);
+}
+
+.feature:hover .hidden-content {
+    height: 100%;
+}
+
+/* == Table Section == */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 18px;
+    text-align: center;
+}
+
+th, td {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+}
+
+th {
+    background-color: #f2f2f2;
+    color: #333;
+    font-weight: bold;
+}
+
+tr {
+    border-bottom: 1px solid #ddd;
+}
+
+tr:nth-of-type(even) {
+    background-color: #f9f9f9;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+    cursor: pointer;
+}
+
+caption {
+    caption-side: top;
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* == FOoter == */
+footer{
+    background: black;
+    color: white;
+    text-align: center;
+    padding: 20px 0;
+}
+.upload-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+.upload-button:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+}
+
+
+
+/* Temperature Section Styles */
+.temperature-container {
+    background-color: #f7f7f7;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 30px;
+    text-align: center;
+    width: 300px; /* Set a fixed width for the box */
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    margin-bottom: 60px; 
+}
+
+.temperature-container input[type="text"] {
+    width: 80%; /* Adjust width to fit within the container */
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.temperature-container input[type="submit"] {
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    background-color: #ff5722;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.temperature-container h2 {
+    color: #333;
+    margin-bottom: 15px;
+}
+
+/* Hide additional details */
+.temperature-details {
+    display: none;
+}
+
+
+#result {
+    font-size: 30px;
+}

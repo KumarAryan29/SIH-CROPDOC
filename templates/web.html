@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        /* Popup Modal Styles */
+        .modal {
+            display: none;
+            /* Hidden by default */
+            position: fixed;
+            /* Stay in place */
+            z-index: 1;
+            /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%;
+            /* Full width */
+            height: 100%;
+            /* Full height */
+            overflow: auto;
+            /* Enable scroll if needed */
+            background-color: rgb(0, 0, 0);
+            /* Fallback color */
+            background-color: rgba(0, 0, 0, 0.4);
+            /* Black w/ opacity */
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            /* Could be more or less, depending on screen size */
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .upload-button,
+        .analyze-button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .analyze-button {
+            background-color: #4CAF50;
+            /* Different color for Analyze button */
+            cursor: pointer;
+        }
+
+
+        .analyze-button:hover {
+            background-color: #45a049;
+            /* Darker shade on hover */
+            transform: scale(1.05);
+            /* Slightly enlarge button on hover */
+        }
+
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(41, 47, 43, 0.8);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- == Header Section == -->
+    <header>
+        <nav>
+            <div class="logo">
+                CROPDOC
+            </div>
+        </nav>
+
+        <section class="h-text">
+            <span>Welcome To</span>
+            <h1>CROPDOC</h1>
+            <br>
+            <!-- Form to upload image of crop -->
+            <!-- <form action="/upload" method="post" enctype="multipart/form-data"> -->
+            <input type="file" name="file" id="upload" accept="image/*" style="display:none;" />
+            <label for="upload" class="upload-button">UPLOAD IMAGE OF CROP</label>
+
+            <button class="analyze-button" onclick="uploadimage()">ANALYZE</button>
+            <!-- </form> -->
+
+            <p id="result"></p> <!-- Display prediction result -->
+            <!-- <div id="loading-screen" class="loading-screen" style="display: none;">Loading...</div> -->
+        </section>
+        <div id="loading-screen" class="loading-screen" style="display: none;">Loading...</div>
+
+    </header>
+
+    <!-- == Feature Section == -->
+    <section class="features">
+        <h2><u>Our Features</u></h2>
+        <div class="feature-card">
+            <div class="feature">
+                <img src="/static/detect plant.jpg" alt="" width="215" height="234">
+                <h3>Detects Disease in the Plant</h3>
+                <div class="hidden-content" id="disease">
+
+                </div>
+            </div>
+            <div class="feature">
+                <img src="/static/suggestion.png" alt="" width="215" height="234">
+                <h3>Provides Suggestions for Better Result</h3>
+                <div class="hidden-content" id="suggestion">
+
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+
+    <!-- Temperature Section -->
+
+    <!-- Temperature Section -->
+    <section class="temperature-container">
+        <div class="temperature-container">
+            <h2>Check Environmental Factors</h2>
+            <input type="text" id="cityinput" placeholder="Enter city name">
+            <input type="submit" id="add" value="Check" action="/result">
+            <div class="temperature-details">
+                <p id="city_output"></p>
+                <p id="description"></p>
+                <p id="temp"></p>
+                <p id="wind"></p>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- -- Table Section -- -->
+    <section class="table">
+        <h2></h2>
+        <table>
+            <tr>
+                <td><b>CROP</b></td>
+                <td><b>DISEASES</b></td>
+            </tr>
+            <tr>
+                <td>Paddy</td>
+                <td>'Blast Disease', 'Brown Spot', 'Bacterial Leaf Blight', 'Sheath Blight'</td>
+            </tr>
+            <tr>
+                <td>Wheat</td>
+                <td>'Rust', 'Powdery Mildew', 'Common Root Rot', 'Septoria'</td>
+            </tr>
+            <tr>
+                <td>Cotton</td>
+                <td>'Bacterial Blight', 'Cotton Rust', 'Charcoal Rot', 'Boll Rot'</td>
+            </tr>
+            <tr>
+                <td>Sugarcane</td>
+                <td>'Yellow Leaf Disease', 'Eyespot Disease', 'Mosaic', 'Wilt', 'Brown Rust'</td>
+            </tr>
+            <tr>
+                <td>Potato</td>
+                <td>'Bacterial Wilt', 'Late Blight', 'Early Blight', 'Common Scab'</td>
+            </tr>
+            <tr>
+                <td>Jute</td>
+                <td>'Stem Rot', 'Anthracnose', 'Black Band', 'Jute Mosaic'</td>
+            </tr>
+        </table>
+    </section>
+
+    <!-- Modal for Results -->
+    <div id="resultModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Analysis Result</h2>
+            <p id="modalResult"></p>
+        </div>
+    </div>
+</body>
+
+
+
+
+
+<!-- Page API -->
+<script>
+
+
+    //  Existing code for weather data
+    var inputvalue = document.querySelector('#cityinput');
+    var btn = document.querySelector('#add');
+    var apik = "741183ed541a4736629e4331020b71f2";
+    var disease = "";
+
+    function convertion(val) {
+        return (val - 273.15).toFixed(2); // Adjust conversion to Celsius
+    }
+
+    btn.addEventListener('click', function (event) {
+        event.preventDefault(); // Prevent default form submission
+
+        fetch('https://api.openweathermap.org/data/2.5/weather?q=' + inputvalue.value + '&appid=' + apik)
+            .then(res => res.json())
+            .then(data => {
+                var nameval = data['name'];
+                var descrip = data['weather'][0]['description'];
+                var temperature = data['main']['temp'];
+                var wndspeed = data['wind']['speed'];
+
+                // Save data to localStorage
+                localStorage.setItem('city', nameval);
+                localStorage.setItem('temperature', convertion(temperature));
+                localStorage.setItem('description', descrip);
+                localStorage.setItem('wind', wndspeed);
+
+                // Redirect to result page
+                window.location.href = 'http://127.0.0.1:5000/result';
+            })
+            .catch(err => alert('You entered an incorrect city name'));
+    });
+
+
+    function uploadimage() {
+        const imageInput = document.getElementById('upload');
+        if (imageInput.files.length === 0) {
+            alert('Please select an image.');
+            return;
+        }
+
+        const file = imageInput.files[0];
+        const formData = new FormData();
+        formData.append('image', file);
+
+        const loadingScreen = document.getElementById('loading-screen');
+        const resultDiv = document.getElementById('result');
+
+        // Show the loading screen
+        loadingScreen.style.display = 'flex';
+
+        fetch('http://127.0.0.1:5000/upload', { // Replace with your API URL
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                resultDiv.innerText = data.message;
+                disease = data.message;
+                fetchWeatherData(); // Assuming fetchWeatherData is defined elsewhere
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to upload image.');
+            })
+            .finally(() => {
+                // Hide the loading screen
+                loadingScreen.style.display = 'none';
+            });
+    }
+
+
+
+
+
+    async function getWeatherByCordinates(lat, lon) {
+        // Construct the API URL
+        const apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apik}`;
+
+        try {
+            // Fetch weather data
+            const response = await fetch(apiUrl);
+
+            // Check if the response is okay
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+
+            // Parse the JSON data
+            const weatherData = await response.json();
+
+
+            // Return the relevant data to the caller
+            // return {
+            //     temperature: data.main.temp,
+            //     description: data.weather[0].description
+            // };
+
+            const formattedString = `
+                        Weather:
+                        - Main: ${weatherData.weather[0].main}
+                        - Description: ${weatherData.weather[0].description}
+                        - Icon: ${weatherData.weather[0].icon}
+
+                        Temperature:
+                        - Current: ${weatherData.main.temp} K
+                        - Minimum: ${weatherData.main.temp_min} K
+                        - Maximum: ${weatherData.main.temp_max} K
+
+                        Pressure: ${weatherData.main.pressure} hPa
+                        Humidity: ${weatherData.main.humidity} %
+
+                        Wind:
+                        - Speed: ${weatherData.wind.speed} m/s
+                        - Direction: ${weatherData.wind.deg}°
+                        - Gust: ${weatherData.wind.gust} m/s
+
+
+                        Clouds:
+                        - Coverage: ${weatherData.clouds.all}%
+                        `;
+
+            return formattedString;
+
+        } catch (error) {
+            // Handle any errors that occurred during the fetch
+            console.error('There has been a problem with your fetch operation:', error);
+            // Return an error object in case of failure
+            return { error: error.message };
+        }
+    }
+
+    // Function to get the user's location
+    async function getLocation() {
+        return new Promise((resolve, reject) => {
+            // Check if Geolocation is supported
+            if (navigator.geolocation) {
+                // Request the user's current position
+                navigator.geolocation.getCurrentPosition(
+                    position => resolve(position),
+                    error => reject(error)
+                );
+            } else {
+                reject(new Error("Geolocation is not supported by this browser."));
+            }
+        });
+    }
+
+
+    function chatapi(weatherData) {
+        const plantHealthValue = disease
+        const weatherDataValue = weatherData
+
+        const formData = new FormData();
+        formData.append('plantHealth', plantHealthValue);
+        formData.append('weatherData', weatherDataValue);
+
+        // Send the form data to the server
+        fetch('http://127.0.0.1:5000/chatapi', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                // Handle the response from the server
+                // alert(JSON.stringify(data))
+                document.getElementById('suggestion').innerText = data.suggestion
+                document.getElementById('disease').innerText = data.disease
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
+    // Main function to get weather data and store it in a variable
+    async function fetchWeatherData() {
+        try {
+            // Get user's location
+            const position = await getLocation();
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+
+            console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+
+            // Get weather data using the coordinates
+            const weatherData = await getWeatherByCordinates(latitude, longitude);
+
+            // Store the weather data in a variable
+            if (weatherData.error) {
+                console.log('Error fetching weather data:', weatherData.error);
+            } else {
+                console.log('Temperature:', weatherData.temperature);
+                console.log('Weather Description:', weatherData.description);
+
+                chatapi(weatherData)
+
+            }
+        } catch (error) {
+            console.error('An error occurred:', error);
+        }
+    }
+
+    // Call the main function
+    // fetchWeatherData();
+
+
+</script>
+
+</html>
